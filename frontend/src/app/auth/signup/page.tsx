@@ -24,7 +24,7 @@ const page = () => {
             </h2>
           </CardTitle>
           <CardDescription>
-            <p>Enter a valid email and password to join today!</p>
+            <p className='text-center'>Enter a valid email and password to join today!</p>
           </CardDescription>
         </CardHeader>
         <CardContent>
