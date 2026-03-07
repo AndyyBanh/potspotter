@@ -45,8 +45,8 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-    implementation 'org.springframework.ai:spring-ai-vertex-ai-gemini-spring-boot-starter'
-
+    implementation 'com.cloudinary:cloudinary-core:2.0.0'
+    implementation 'com.cloudinary:cloudinary-http5:2.0.0'
 }
 
 tasks.named('test') {
