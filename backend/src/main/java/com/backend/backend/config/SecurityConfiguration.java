@@ -3,12 +3,10 @@ package com.backend.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -37,10 +35,10 @@ public class SecurityConfiguration {
                 .csrf(crsf -> crsf.disable())
                 .cors(cors -> {})
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "api/v1/request").permitAll()
-                        .requestMatchers(HttpMethod.GET, "api/v1/supplies").permitAll()
-                        .requestMatchers(HttpMethod.GET, "api/v1/washroom").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "api/v1/request").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "api/v1/supplies").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "api/v1/washroom").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

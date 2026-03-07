@@ -35,7 +35,7 @@ public class AuthenticationService {
         return this.userRepository.save(user);
     }
 
-    public User authentication(LoginUserDto input) {
+    public User authenticate(LoginUserDto input) {
 
         User user = this.userRepository.findByEmail(input.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 

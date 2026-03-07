@@ -1,4 +1,4 @@
-package com.backend.backend.responses;
+package com.backend.backend.response;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,4 +15,6 @@ public class LoginResponse {
         this.token = token;
         this.expiration = expiration;
     }
+
+
 }
