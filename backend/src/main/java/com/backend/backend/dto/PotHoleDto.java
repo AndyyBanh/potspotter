@@ -1,4 +1,4 @@
-package com.backend.backend.dtos;
+package com.backend.backend.dto;
 
 import lombok.*;
 

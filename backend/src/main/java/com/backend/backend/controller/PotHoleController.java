@@ -1,6 +1,6 @@
 package com.backend.backend.controller;
 
-import com.backend.backend.dtos.PotHoleDto;
+import com.backend.backend.dto.PotHoleDto;
 import com.backend.backend.service.PotHoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

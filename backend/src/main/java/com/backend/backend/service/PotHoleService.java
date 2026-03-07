@@ -1,6 +1,6 @@
 package com.backend.backend.service;
 
-import com.backend.backend.dtos.PotHoleDto;
+import com.backend.backend.dto.PotHoleDto;
 import com.backend.backend.exceptions.PotHoleNotFoundException;
 import com.backend.backend.model.PotHole;
 import com.backend.backend.repository.PotHoleRepository;
