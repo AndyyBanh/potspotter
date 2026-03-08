@@ -26,6 +26,7 @@ public class PotHoleService {
 
     private PotHoleDto mapToDto(PotHole potHole) {
         PotHoleDto potHoleDto = new PotHoleDto();
+        potHoleDto.setId(potHole.getId());
         potHoleDto.setLongitude(potHole.getLongitude());
         potHoleDto.setLatitude(potHole.getLatitude());
         potHoleDto.setUpvotes(potHole.getUpvotes());
@@ -76,6 +77,22 @@ public class PotHoleService {
         PotHole potHole = this.potHoleRepository.findById(id)
                 .orElseThrow(() -> new PotHoleNotFoundException("PotHole with associated id " + id + " not found"));
         this.potHoleRepository.delete(potHole);
+    }
+
+    public PotHoleDto upvote(Long id) {
+        PotHole potHole = this.potHoleRepository.findById(id)
+                .orElseThrow(() -> new PotHoleNotFoundException("PotHole with associated id " + id + " not found"));
+        potHole.setUpvotes((potHole.getUpvotes() != null ? potHole.getUpvotes() : 0) + 1);
+        this.potHoleRepository.save(potHole);
+        return mapToDto(potHole);
+    }
+
+    public PotHoleDto downvote(Long id) {
+        PotHole potHole = this.potHoleRepository.findById(id)
+                .orElseThrow(() -> new PotHoleNotFoundException("PotHole with associated id " + id + " not found"));
+        potHole.setDownvotes((potHole.getDownvotes() != null ? potHole.getDownvotes() : 0) + 1);
+        this.potHoleRepository.save(potHole);
+        return mapToDto(potHole);
     }
 
 }

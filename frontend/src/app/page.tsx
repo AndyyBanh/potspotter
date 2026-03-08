@@ -11,18 +11,18 @@ export default function Home() {
     <div className="flex flex-col bg-zinc-50">
       <Navbar />
 
-      <main className="min-h-screen grid flex-1 grid-cols-1 items-center gap-8 px-8 py-12 lg:grid-cols-2">
+      <main className="min-h-screen grid flex-1 grid-cols-1 items-center px-8 py-12 lg:grid-cols-2">
         {/* Hero Section */}
-        <div className="flex flex-col gap-6">
-          <h1 className="text-5xl font-bold tracking-tight lg:text-6xl uppercase">
+        <div className="flex flex-col text-center gap-6">
+          <h1 className="text-6xl font-bold tracking-tight lg:text-6xl uppercase">
             Pot Spotter
           </h1>
-          <p className="max-w-md text-lg text-zinc-500">
+          <p className="max-w-md text-lg text-zinc-500 mx-auto">
             Report and track potholes across the GTA. Help your community by
             pinning road hazards, uploading photos, and voting on reports — all
             verified with AI.
           </p>
-          <div className="flex gap-3">
+          <div className="flex gap-3 justify-center">
             <Link
               href="/auth/signup"
             >

@@ -52,4 +52,14 @@ public class PotHoleController {
         this.potHoleService.deletePotHoleById(id);
         return ResponseEntity.ok("PotHole deleted successfully");
     }
+
+    @PostMapping("/{id}/upvote")
+    public ResponseEntity<PotHoleDto> upvote(@PathVariable Long id) {
+        return ResponseEntity.ok(this.potHoleService.upvote(id));
+    }
+
+    @PostMapping("/{id}/downvote")
+    public ResponseEntity<PotHoleDto> downvote(@PathVariable Long id) {
+        return ResponseEntity.ok(this.potHoleService.downvote(id));
+    }
 }

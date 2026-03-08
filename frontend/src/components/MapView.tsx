@@ -55,6 +55,7 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
     const [potholes, setPotholes] = useState<PotHole[]>([]);
     const [selectedPothole, setSelectedPothole] = useState<PotHole | null>(null);
     const [flyTo, setFlyTo] = useState<[number, number] | null>(null);
+    const [votedPotholes, setVotedPotholes] = useState<Record<number, "up" | "down">>({});
 
     useEffect(() => {
         fetchPotholes();
@@ -113,6 +114,21 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
         setIsReporting(false);
     };
 
+    const handleVote = async (id: number, type: "up" | "down") => {
+        if (votedPotholes[id]) return;
+        try {
+            const res = await axiosInstance.post(`/api/v1/pothole/${id}/${type === "up" ? "upvote" : "downvote"}`);
+            const updated = res.data;
+            setPotholes(prev => prev.map(p => p.id === id ? { ...p, upvotes: updated.upvotes, downvotes: updated.downvotes } : p));
+            if (selectedPothole?.id === id) {
+                setSelectedPothole(prev => prev ? { ...prev, upvotes: updated.upvotes, downvotes: updated.downvotes } : null);
+            }
+            setVotedPotholes(prev => ({ ...prev, [id]: type }));
+        } catch (err) {
+            console.error("Failed to vote", err);
+        }
+    };
+
     const handleMarkerClick = (pothole: PotHole) => {
         setSelectedPothole(pothole);
         setFlyTo([pothole.latitude, pothole.longitude]);
@@ -156,7 +172,7 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
                 {selectedPothole && (
                     <>
                         <div className="flex items-center justify-between px-5 py-4 border-b">
-                            <h2 className="text-lg font-bold">Pothole #{selectedPothole.id}</h2>
+                            <h2 className="text-lg font-bold">Pothole</h2>
                             <button
                                 onClick={() => setSelectedPothole(null)}
                                 className="text-gray-400 hover:text-gray-600 text-xl font-bold"
@@ -188,14 +204,22 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
                                 </div>
 
                                 <div className="flex gap-3">
-                                    <div className="flex-1 bg-gray-50 rounded-xl p-3 text-center">
-                                        <p className="text-xs text-gray-400 mb-1">👍 Upvotes</p>
+                                    <button
+                                        onClick={() => handleVote(selectedPothole.id, "up")}
+                                        disabled={!!votedPotholes[selectedPothole.id]}
+                                        className={`flex-1 rounded-xl p-3 text-center transition-colors ${votedPotholes[selectedPothole.id] === "up" ? "bg-green-100 border-2 border-green-400" : "bg-gray-50 hover:bg-green-50"} disabled:cursor-not-allowed`}
+                                    >
+                                        <p className="text-xs text-gray-400 mb-1">Upvote</p>
                                         <p className="text-lg font-bold">{selectedPothole.upvotes ?? 0}</p>
-                                    </div>
-                                    <div className="flex-1 bg-gray-50 rounded-xl p-3 text-center">
-                                        <p className="text-xs text-gray-400 mb-1">👎 Downvotes</p>
+                                    </button>
+                                    <button
+                                        onClick={() => handleVote(selectedPothole.id, "down")}
+                                        disabled={!!votedPotholes[selectedPothole.id]}
+                                        className={`flex-1 rounded-xl p-3 text-center transition-colors ${votedPotholes[selectedPothole.id] === "down" ? "bg-red-100 border-2 border-red-400" : "bg-gray-50 hover:bg-red-50"} disabled:cursor-not-allowed`}
+                                    >
+                                        <p className="text-xs text-gray-400 mb-1">Downvote</p>
                                         <p className="text-lg font-bold">{selectedPothole.downvotes ?? 0}</p>
-                                    </div>
+                                    </button>
                                 </div>
                             </div>
                         </div>

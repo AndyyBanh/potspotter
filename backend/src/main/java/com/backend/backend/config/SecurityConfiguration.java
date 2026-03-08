@@ -34,7 +34,7 @@ public class SecurityConfiguration {
         http
 
                 .csrf(crsf -> crsf.disable())
-                .cors(cors -> {})
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/pothole/**").permitAll()
