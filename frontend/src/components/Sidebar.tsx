@@ -30,28 +30,28 @@ export default function Sidebar({ isOpen, onReportClick }: { isOpen: boolean; on
         <aside className={`w-64 shadow-sm flex flex-col py-6 px-4 gap-4 shrink-0 transition-all duration-300 ${isOpen ? "ml-0" : "-ml-64"}`}>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Menu</p>
 
-            {/* Stats Card */}
-            <Card className="bg-gray-50 rounded-2xl p-4 flex flex-col gap-3">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Toronto Stats</p>
-                <div>
-                    <p className="text-2xl font-bold">{stats.total}</p>
-                    <p className="text-xs text-gray-400">Total Potholes</p>
-                </div>
-                <div className="flex flex-col gap-1">
-                    <p className="text-xs font-semibold text-gray-500 mb-1">Severity</p>
-                    <div className="flex justify-between text-sm">
-                        <span className="text-green-500 font-medium">Low</span>
-                        <span>{stats.low}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                        <span className="text-yellow-500 font-medium">Medium</span>
-                        <span>{stats.medium}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                        <span className="text-red-500 font-medium">High</span>
-                        <span>{stats.high}</span>
-                    </div>
-                </div>
+            {/* Total Potholes */}
+            <Card className="bg-gray-50 rounded-2xl p-5 flex flex-col gap-1">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Potholes</p>
+                <p className="text-3xl font-bold">{stats.total}</p>
+            </Card>
+
+            {/* High Severity */}
+            <Card className="rounded-2xl p-4 bg-red-50">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">High Severity</p>
+                <p className="text-2xl font-bold text-red-600">{stats.high}</p>
+            </Card>
+
+            {/* Moderate Severity */}
+            <Card className="rounded-2xl p-4 bg-yellow-50">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Moderate Severity</p>
+                <p className="text-2xl font-bold text-yellow-600">{stats.medium}</p>
+            </Card>
+
+            {/* Low Severity */}
+            <Card className="rounded-2xl p-4 bg-green-50">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Low Severity</p>
+                <p className="text-2xl font-bold text-green-600">{stats.low}</p>
             </Card>
 
             <div className="mt-auto mb-6">

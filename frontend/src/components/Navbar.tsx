@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { RxHamburgerMenu } from "react-icons/rx";
+import toast from "react-hot-toast";
 
 export default function Navbar({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
     const router = useRouter();
@@ -13,6 +14,7 @@ export default function Navbar({ onToggleSidebar }: { onToggleSidebar?: () => vo
     const handleLogout = () => {
         logout();
         router.push('/');
+        toast.success('Successfully logged out');
     };
 
     return (

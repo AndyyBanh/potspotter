@@ -5,6 +5,7 @@ import { useState, Dispatch, SetStateAction, useEffect } from "react";
 import L from "leaflet";
 import axiosInstance from "@/api/axiosinstance";
 import { Button } from "./ui/button";
+import toast from "react-hot-toast";
 
 const markerIcon = new L.Icon({
     iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -98,7 +99,15 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
                 throw new Error(err.error || "Failed to analyze image");
             }
             const analysis = await analyzeRes.json();
-            const severity = analysis.severity_score ?? 1;
+            const severity = analysis.severity_score ?? 0;
+
+            if (severity === 0) {
+                toast.error("Image is not a pothole. Please upload a valid pothole photo.");
+                setShowForm(false);
+                setMarkerPos(null);
+                setPhoto(null);
+                return;
+            }
 
             // Step 2: Submit to backend
             setSubmitStatus("Submitting report...");
@@ -115,6 +124,7 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
             setMarkerPos(null);
             setPhoto(null);
             fetchPotholes();
+            toast.success('Pothole successfully reported');
         } catch (err) {
             setFormError(err instanceof Error ? err.message : "Failed to submit report. Please try again.");
         } finally {

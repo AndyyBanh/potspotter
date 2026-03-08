@@ -9,6 +9,7 @@ import { IoIosArrowRoundBack } from "react-icons/io";
 import { useRouter } from 'next/navigation';
 import { signup } from '@/service/authService';
 import { validateEmail } from '@/lib/utils';
+import toast from 'react-hot-toast';
 
 export default function Page() {
   const router = useRouter();
@@ -35,6 +36,7 @@ export default function Page() {
     try {
       await signup(email, password, username);
       router.push('/auth/login');
+      toast.success('Account successfully created');
     } catch (err) {
       setError('Failed to create account. Email may already be in use.');
     }

@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { login } from '@/service/authService';
 import { useAuth } from '@/context/AuthContext';
 import { validateEmail } from '@/lib/utils';
+import toast from 'react-hot-toast';
 
 export default function Page() {
   const router = useRouter();
@@ -34,6 +35,7 @@ export default function Page() {
       const response = await login(email, password);
       auth.login(response.data.token);
       router.push('/dashboard');
+      toast.success('Login Success');
     } catch (err) {
       setError('Invalid email or password');
     }
