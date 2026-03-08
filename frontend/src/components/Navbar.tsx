@@ -21,10 +21,7 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="flex items-center justify-between px-8 py-4">
-            <Link href="/" className="text-xl font-bold">
-                Pot Spotter
-            </Link>
+        <nav className="flex items-center justify-end px-8 py-4">
             <div className="flex gap-3">
                 {isLoggedIn ? (
                     <Button
