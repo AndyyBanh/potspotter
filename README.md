@@ -8,32 +8,6 @@ A web platform for reporting and tracking potholes across the GTA. Users can vie
 
 **Backend** — Spring Boot 3.5 / Java 21 / PostgreSQL (Supabase) / Spring Security (JWT) / Cloudinary
 
-## Prerequisites
-
-- Java 21
-- Node.js 18+
-- PostgreSQL database (Supabase recommended)
-- Cloudinary account
-- Google Gemini API key
-
-## Environment Variables
-
-### Backend (`backend/.env`)
-
-```
-SPRING_DATASOURCE_URL=jdbc:postgresql://<host>:<port>/<db>
-SPRING_DATASOURCE_USERNAME=<username>
-SPRING_DATASOURCE_PASSWORD=<password>
-JWT_SECRET_KEY=<your-jwt-secret>
-CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
-```
-
-### Frontend (`frontend/.env`)
-
-```
-GEMINI_API_KEY=<your-gemini-api-key>
-```
-
 ## Getting Started
 
 ### Backend
