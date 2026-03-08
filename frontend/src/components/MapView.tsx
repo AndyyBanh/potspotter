@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { useState, Dispatch, SetStateAction, useEffect } from "react";
 import L from "leaflet";
 import axiosInstance from "@/api/axiosinstance";
+import { Button } from "./ui/button";
 
 const markerIcon = new L.Icon({
     iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -49,9 +50,9 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
     const [markerPos, setMarkerPos] = useState<[number, number] | null>(null);
     const [showForm, setShowForm] = useState(false);
     const [photo, setPhoto] = useState<File | null>(null);
-    const [severity, setSeverity] = useState<number>(1);
     const [formError, setFormError] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState("");
     const [potholes, setPotholes] = useState<PotHole[]>([]);
     const [selectedPothole, setSelectedPothole] = useState<PotHole | null>(null);
     const [flyTo, setFlyTo] = useState<[number, number] | null>(null);
@@ -86,25 +87,39 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
         setSubmitting(true);
         setFormError("");
 
-        const formData = new FormData();
-        formData.append("file", photo);
-        formData.append("latitude", markerPos[0].toString());
-        formData.append("longitude", markerPos[1].toString());
-        formData.append("severity", severity.toString());
-
         try {
+            // Step 1: Analyze severity with Gemini
+            setSubmitStatus("Analyzing pothole severity...");
+            const analyzeForm = new FormData();
+            analyzeForm.append("image", photo);
+            const analyzeRes = await fetch("/api/analyze", { method: "POST", body: analyzeForm });
+            if (!analyzeRes.ok) {
+                const err = await analyzeRes.json();
+                throw new Error(err.error || "Failed to analyze image");
+            }
+            const analysis = await analyzeRes.json();
+            const severity = analysis.severity_score ?? 1;
+
+            // Step 2: Submit to backend
+            setSubmitStatus("Submitting report...");
+            const formData = new FormData();
+            formData.append("file", photo);
+            formData.append("latitude", markerPos[0].toString());
+            formData.append("longitude", markerPos[1].toString());
+            formData.append("severity", severity.toString());
+
             await axiosInstance.post("/api/v1/pothole", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
             setShowForm(false);
             setMarkerPos(null);
             setPhoto(null);
-            setSeverity(1);
             fetchPotholes();
         } catch (err) {
-            setFormError("Failed to submit report. Please try again.");
+            setFormError(err instanceof Error ? err.message : "Failed to submit report. Please try again.");
         } finally {
             setSubmitting(false);
+            setSubmitStatus("");
         }
     };
 
@@ -173,12 +188,12 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
                     <>
                         <div className="flex items-center justify-between px-5 py-4 border-b">
                             <h2 className="text-lg font-bold">Pothole</h2>
-                            <button
+                            <Button
                                 onClick={() => setSelectedPothole(null)}
-                                className="text-gray-400 hover:text-gray-600 text-xl font-bold"
+                                className="text-xl font-bold" variant="ghost"
                             >
                                 ✕
-                            </button>
+                            </Button>
                         </div>
 
                         <div className="flex flex-col gap-4 p-5 overflow-y-auto">
@@ -192,12 +207,12 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
 
                             <div className="flex flex-col gap-3">
                                 <div className="bg-gray-50 rounded-xl p-3">
-                                    <p className="text-xs text-gray-400 mb-1">Location</p>
+                                    <p className="text-xstext-gray-500 mb-1">Location</p>
                                     <p className="text-sm font-medium">{selectedPothole.latitude.toFixed(5)}, {selectedPothole.longitude.toFixed(5)}</p>
                                 </div>
 
                                 <div className={`rounded-xl p-3 ${getSeverityLabel(selectedPothole.severity).bg}`}>
-                                    <p className="text-xs text-gray-400 mb-1">Severity</p>
+                                    <p className="text-xs text-gray-500 mb-1">Severity</p>
                                     <p className={`text-sm font-bold ${getSeverityLabel(selectedPothole.severity).color}`}>
                                         {getSeverityLabel(selectedPothole.severity).label}
                                     </p>
@@ -209,7 +224,7 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
                                         disabled={!!votedPotholes[selectedPothole.id]}
                                         className={`flex-1 rounded-xl p-3 text-center transition-colors ${votedPotholes[selectedPothole.id] === "up" ? "bg-green-100 border-2 border-green-400" : "bg-gray-50 hover:bg-green-50"} disabled:cursor-not-allowed`}
                                     >
-                                        <p className="text-xs text-gray-400 mb-1">Upvote</p>
+                                        <p className="text-xs text-gray-500 mb-1">Upvote</p>
                                         <p className="text-lg font-bold">{selectedPothole.upvotes ?? 0}</p>
                                     </button>
                                     <button
@@ -217,7 +232,7 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
                                         disabled={!!votedPotholes[selectedPothole.id]}
                                         className={`flex-1 rounded-xl p-3 text-center transition-colors ${votedPotholes[selectedPothole.id] === "down" ? "bg-red-100 border-2 border-red-400" : "bg-gray-50 hover:bg-red-50"} disabled:cursor-not-allowed`}
                                     >
-                                        <p className="text-xs text-gray-400 mb-1">Downvote</p>
+                                        <p className="text-xs text-gray-500 mb-1">Downvote</p>
                                         <p className="text-lg font-bold">{selectedPothole.downvotes ?? 0}</p>
                                     </button>
                                 </div>
@@ -262,34 +277,29 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
                         />
                     </div>
 
-                    <p className="font-medium mb-2">Severity</p>
-                    <select
-                        value={severity}
-                        onChange={(e) => setSeverity(Number(e.target.value))}
-                        className="w-full p-3 border rounded-xl mb-4 text-sm"
-                    >
-                        <option value={1}>1 - Low</option>
-                        <option value={2}>2 - Medium</option>
-                        <option value={3}>3 - High</option>
-                    </select>
-
                     {formError && <p className="text-red-500 text-sm mb-3">{formError}</p>}
 
-                    <div className="flex justify-between">
-                        <button
-                            onClick={handleCancel}
-                            className="px-4 py-2 rounded-xl border text-sm hover:bg-gray-50"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={handleSubmit}
-                            disabled={submitting}
-                            className="px-4 py-2 rounded-xl bg-orange-400 hover:bg-orange-500 text-white text-sm font-semibold disabled:opacity-50"
-                        >
-                            {submitting ? "Submitting..." : "Submit"}
-                        </button>
-                    </div>
+                    {submitting ? (
+                        <div className="flex flex-col items-center gap-3 py-4">
+                            <div className="h-8 w-8 border-4 border-gray-200 border-t-orange-400 rounded-full animate-spin" />
+                            <p className="text-sm text-gray-500">{submitStatus}</p>
+                        </div>
+                    ) : (
+                        <div className="flex justify-between">
+                            <button
+                                onClick={handleCancel}
+                                className="px-4 py-2 rounded-xl border text-sm hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSubmit}
+                                className="px-4 py-2 rounded-xl bg-orange-400 hover:bg-orange-500 text-white text-sm font-semibold"
+                            >
+                                Submit
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

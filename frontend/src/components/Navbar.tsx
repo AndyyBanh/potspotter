@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { RxHamburgerMenu } from "react-icons/rx";
 
 export default function Navbar({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
     const router = useRouter();
@@ -18,13 +19,9 @@ export default function Navbar({ onToggleSidebar }: { onToggleSidebar?: () => vo
         <nav className="flex items-center justify-between px-8 py-4 border-b bg-white">
             <div className="flex items-center gap-3">
                 {onToggleSidebar && (
-                    <button onClick={onToggleSidebar} className="p-2 hover:bg-gray-100 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="3" y1="6" x2="21" y2="6" />
-                            <line x1="3" y1="12" x2="21" y2="12" />
-                            <line x1="3" y1="18" x2="21" y2="18" />
-                        </svg>
-                    </button>
+                    <Button onClick={onToggleSidebar} variant="ghost" className="p-2 hover:bg-gray-100 rounded-lg" size="lg">
+                        <RxHamburgerMenu />
+                    </Button>
                 )}
                 <Link href="/" className="text-xl font-bold">Pot Spotter</Link>
             </div>

@@ -8,6 +8,7 @@ import React, { useState } from 'react'
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { useRouter } from 'next/navigation';
 import { signup } from '@/service/authService';
+import { validateEmail } from '@/lib/utils';
 
 export default function Page() {
   const router = useRouter();
@@ -21,6 +22,11 @@ export default function Page() {
     e.preventDefault();
     setError('');
 
+    if (!email || !validateEmail(email)) {
+      setError('Invalid email');      
+      return;
+    }
+    
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;

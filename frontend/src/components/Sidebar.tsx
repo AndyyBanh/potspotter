@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import axiosInstance from "@/api/axiosinstance";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
 
 interface PotHole {
     severity: number;
@@ -25,11 +27,11 @@ export default function Sidebar({ isOpen, onReportClick }: { isOpen: boolean; on
     }, []);
 
     return (
-        <aside className={`w-64 bg-white border-r shadow-sm flex flex-col py-6 px-4 gap-4 shrink-0 transition-all duration-300 ${isOpen ? "ml-0" : "-ml-64"}`}>
+        <aside className={`w-64 shadow-sm flex flex-col py-6 px-4 gap-4 shrink-0 transition-all duration-300 ${isOpen ? "ml-0" : "-ml-64"}`}>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Menu</p>
 
             {/* Stats Card */}
-            <div className="bg-gray-50 rounded-2xl p-4 flex flex-col gap-3">
+            <Card className="bg-gray-50 rounded-2xl p-4 flex flex-col gap-3">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Toronto Stats</p>
                 <div>
                     <p className="text-2xl font-bold">{stats.total}</p>
@@ -50,15 +52,15 @@ export default function Sidebar({ isOpen, onReportClick }: { isOpen: boolean; on
                         <span>{stats.high}</span>
                     </div>
                 </div>
-            </div>
+            </Card>
 
             <div className="mt-auto mb-6">
-                <button
+                <Button
                     onClick={onReportClick}
                     className="w-full px-4 py-3 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-semibold text-sm"
                 >
                     Report Pothole
-                </button>
+                </Button>
             </div>
         </aside>
     );

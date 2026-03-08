@@ -9,6 +9,7 @@ import { IoIosArrowRoundBack } from "react-icons/io";
 import { useRouter } from 'next/navigation';
 import { login } from '@/service/authService';
 import { useAuth } from '@/context/AuthContext';
+import { validateEmail } from '@/lib/utils';
 
 export default function Page() {
   const router = useRouter();
@@ -20,7 +21,15 @@ export default function Page() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
+    if (!email || !validateEmail(email)) {
+      setError('Please enter valid email');
+      return;
+    }
+    
+    if (!password) {
+      setError('Please enter the password');
+    }
+    
     try {
       const response = await login(email, password);
       auth.login(response.data.token);
