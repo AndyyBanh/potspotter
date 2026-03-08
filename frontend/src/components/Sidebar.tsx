@@ -1,22 +1,32 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import axiosInstance from "@/api/axiosinstance";
 
-export default function Sidebar({ onReportClick }: { onReportClick: () => void }) {
-    const stats = {
-        total: 214,
-        low: 89,
-        medium: 94,
-        high: 31,
-    };
+interface PotHole {
+    severity: number;
+}
+
+export default function Sidebar({ isOpen, onReportClick }: { isOpen: boolean; onReportClick: () => void }) {
+    const [stats, setStats] = useState({ total: 0, low: 0, medium: 0, high: 0 });
+
+    useEffect(() => {
+        axiosInstance.get("/api/v1/pothole")
+            .then((res) => {
+                const data: PotHole[] = Array.isArray(res.data) ? res.data : [];
+                setStats({
+                    total: data.length,
+                    low: data.filter(p => p.severity === 1).length,
+                    medium: data.filter(p => p.severity === 2).length,
+                    high: data.filter(p => p.severity === 3).length,
+                });
+            })
+            .catch((err) => console.error("Failed to fetch stats", err));
+    }, []);
 
     return (
-        <aside className="fixed left-0 top-0 h-full w-64 bg-white border-r shadow-sm flex flex-col pt-6 px-4 gap-4">
-            <p className="text-xl font-bold mb-4">Pot Spotter</p>
+        <aside className={`w-64 bg-white border-r shadow-sm flex flex-col py-6 px-4 gap-4 shrink-0 transition-all duration-300 ${isOpen ? "ml-0" : "-ml-64"}`}>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Menu</p>
-            <Link href="/dashboard" className="text-sm font-medium hover:text-orange-400 transition-colors">
-                Dashboard
-            </Link>
 
             {/* Stats Card */}
             <div className="bg-gray-50 rounded-2xl p-4 flex flex-col gap-3">
@@ -47,7 +57,7 @@ export default function Sidebar({ onReportClick }: { onReportClick: () => void }
                     onClick={onReportClick}
                     className="w-full px-4 py-3 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-semibold text-sm"
                 >
-                     Report Pothole
+                    Report Pothole
                 </button>
             </div>
         </aside>

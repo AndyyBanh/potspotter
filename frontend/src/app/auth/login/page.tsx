@@ -8,9 +8,11 @@ import React, { useState } from 'react'
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { useRouter } from 'next/navigation';
 import { login } from '@/service/authService';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Page() {
   const router = useRouter();
+  const auth = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -21,7 +23,7 @@ export default function Page() {
 
     try {
       const response = await login(email, password);
-      localStorage.setItem('token', response.data.token);
+      auth.login(response.data.token);
       router.push('/dashboard');
     } catch (err) {
       setError('Invalid email or password');

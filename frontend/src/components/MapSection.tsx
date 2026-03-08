@@ -6,8 +6,8 @@ const MapView = dynamic(() => import("@/components/MapView").then(mod => mod.Map
     ssr: false
 });
 
-export default function MapSection({ isReporting, setIsReporting }: { isReporting: boolean, setIsReporting: Dispatch<SetStateAction<boolean>> }) {
+export default function MapSection({ isReporting = false, setIsReporting }: { isReporting?: boolean, setIsReporting?: Dispatch<SetStateAction<boolean>> }) {
     return (
-        <MapView isReporting={isReporting} setIsReporting={setIsReporting} />
+        <MapView isReporting={isReporting} setIsReporting={setIsReporting ?? (() => {})} />
     )
 }

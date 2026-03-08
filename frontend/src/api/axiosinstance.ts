@@ -28,7 +28,7 @@ axiosInstance.interceptors.response.use(
             if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
-                window.location.href = '/login'
+                window.location.href = '/auth/login'
             } else if (error.response.status === 500) {
                 console.error('Server error. Please try again later');
             }

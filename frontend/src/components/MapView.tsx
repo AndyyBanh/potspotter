@@ -49,17 +49,15 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
     const [markerPos, setMarkerPos] = useState<[number, number] | null>(null);
     const [showForm, setShowForm] = useState(false);
     const [photo, setPhoto] = useState<File | null>(null);
+    const [severity, setSeverity] = useState<number>(1);
+    const [formError, setFormError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
     const [potholes, setPotholes] = useState<PotHole[]>([]);
     const [selectedPothole, setSelectedPothole] = useState<PotHole | null>(null);
     const [flyTo, setFlyTo] = useState<[number, number] | null>(null);
 
     useEffect(() => {
-        axiosInstance.get("/api/v1/pothole")
-            .then((res) => {
-                const data = res.data;
-                setPotholes(Array.isArray(data) ? data : []);
-            })
-            .catch((err) => console.error("Failed to fetch potholes", err));
+        fetchPotholes();
     }, []);
 
     const handleMapClick = (lat: number, lng: number) => {
@@ -68,11 +66,45 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
         setShowForm(true);
     };
 
-    const handleSubmit = () => {
-        console.log({ markerPos, photo });
-        setShowForm(false);
-        setMarkerPos(null);
-        setPhoto(null);
+    const fetchPotholes = () => {
+        axiosInstance.get("/api/v1/pothole")
+            .then((res) => {
+                const data = res.data;
+                setPotholes(Array.isArray(data) ? data : []);
+            })
+            .catch((err) => console.error("Failed to fetch potholes", err));
+    };
+
+    const handleSubmit = async () => {
+        if (!photo) {
+            setFormError("Please upload a photo");
+            return;
+        }
+        if (!markerPos) return;
+
+        setSubmitting(true);
+        setFormError("");
+
+        const formData = new FormData();
+        formData.append("file", photo);
+        formData.append("latitude", markerPos[0].toString());
+        formData.append("longitude", markerPos[1].toString());
+        formData.append("severity", severity.toString());
+
+        try {
+            await axiosInstance.post("/api/v1/pothole", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            setShowForm(false);
+            setMarkerPos(null);
+            setPhoto(null);
+            setSeverity(1);
+            fetchPotholes();
+        } catch (err) {
+            setFormError("Failed to submit report. Please try again.");
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     const handleCancel = () => {
@@ -181,7 +213,7 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] bg-white rounded-2xl shadow-2xl p-6 w-96">
                     <h2 className="text-xl font-bold mb-4">Report a Pothole</h2>
 
-                    <p className="font-medium mb-2">Upload Photo (optional)</p>
+                    <p className="font-medium mb-2">Upload Photo</p>
                     <div
                         onDragOver={(e) => e.preventDefault()}
                         onDrop={(e) => {
@@ -206,6 +238,19 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
                         />
                     </div>
 
+                    <p className="font-medium mb-2">Severity</p>
+                    <select
+                        value={severity}
+                        onChange={(e) => setSeverity(Number(e.target.value))}
+                        className="w-full p-3 border rounded-xl mb-4 text-sm"
+                    >
+                        <option value={1}>1 - Low</option>
+                        <option value={2}>2 - Medium</option>
+                        <option value={3}>3 - High</option>
+                    </select>
+
+                    {formError && <p className="text-red-500 text-sm mb-3">{formError}</p>}
+
                     <div className="flex justify-between">
                         <button
                             onClick={handleCancel}
@@ -215,9 +260,10 @@ export function MapView({ isReporting, setIsReporting }: { isReporting: boolean,
                         </button>
                         <button
                             onClick={handleSubmit}
-                            className="px-4 py-2 rounded-xl bg-orange-400 hover:bg-orange-500 text-white text-sm font-semibold"
+                            disabled={submitting}
+                            className="px-4 py-2 rounded-xl bg-orange-400 hover:bg-orange-500 text-white text-sm font-semibold disabled:opacity-50"
                         >
-                            Submit
+                            {submitting ? "Submitting..." : "Submit"}
                         </button>
                     </div>
                 </div>
