@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Service
 public class CloudinaryService {
-    private Cloudinary cloudinary;
+    private final Cloudinary cloudinary;
 
     @Autowired
     public CloudinaryService(Cloudinary cloudinary) {

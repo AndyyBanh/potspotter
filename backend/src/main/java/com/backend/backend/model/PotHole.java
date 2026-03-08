@@ -24,7 +24,7 @@ public class PotHole {
 
     private String imageUrl;
 
-    private Integer severity; // 1-5 most severe
+    private Integer severity; // 1-3 most severe
 
     private Integer upvotes;
     private Integer downvotes;

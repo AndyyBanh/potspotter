@@ -7,16 +7,21 @@ import com.backend.backend.repository.PotHoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class PotHoleService {
     private final PotHoleRepository potHoleRepository;
+    private final CloudinaryService cloudinaryService;
 
     @Autowired
-    public PotHoleService(PotHoleRepository potHoleRepository) {
+    public PotHoleService(PotHoleRepository potHoleRepository, CloudinaryService cloudinaryService) {
         this.potHoleRepository = potHoleRepository;
+        this.cloudinaryService = cloudinaryService;
     }
 
     private PotHoleDto mapToDto(PotHole potHole) {
@@ -26,7 +31,7 @@ public class PotHoleService {
         potHoleDto.setUpvotes(potHole.getUpvotes());
         potHoleDto.setDownvotes(potHole.getDownvotes());
         potHoleDto.setSeverity(potHole.getSeverity());
-        potHoleDto.setImageUrl(potHoleDto.getImageUrl());
+        potHoleDto.setImageUrl(potHole.getImageUrl());
         return potHoleDto;
     }
 
@@ -40,14 +45,16 @@ public class PotHoleService {
         return mapToDto(potHole);
     }
 
-    public PotHoleDto createPotHole(PotHoleDto potHoleDto) {
+    public PotHoleDto createPotHole(MultipartFile file, Double latitude, Double longitude, Integer severity) throws IOException {
+        String imageUrl = this.cloudinaryService.uploadImage(file);
+
         PotHole potHole = new PotHole();
-        potHole.setLatitude(potHoleDto.getLatitude());
-        potHole.setLongitude(potHoleDto.getLongitude());
-        potHole.setImageUrl(potHoleDto.getImageUrl());
-        potHole.setSeverity(potHoleDto.getSeverity());
-        potHole.setUpvotes(potHoleDto.getUpvotes() != null ? potHoleDto.getUpvotes() : 0);
-        potHole.setDownvotes(potHoleDto.getDownvotes() != null ? potHoleDto.getDownvotes() : 0);
+        potHole.setLatitude(latitude);
+        potHole.setLongitude(longitude);
+        potHole.setImageUrl(imageUrl);
+        potHole.setSeverity(severity);
+        potHole.setUpvotes(0);
+        potHole.setDownvotes(0);
         this.potHoleRepository.save(potHole);
         return mapToDto(potHole);
     }
