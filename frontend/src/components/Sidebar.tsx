@@ -47,7 +47,7 @@ export default function Sidebar({ onReportClick }: { onReportClick: () => void }
                     onClick={onReportClick}
                     className="w-full px-4 py-3 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-semibold text-sm"
                 >
-                    🚨 Report Pothole
+                     Report Pothole
                 </button>
             </div>
         </aside>
